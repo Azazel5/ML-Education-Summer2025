@@ -1,0 +1,157 @@
+# Hands on ML
+
+## Preface
+
+- Geoffrey Hinton et al reignited the interest in deep learning back in 2006 → https://www.cs.toronto.edu/~hinton/absps/ncfast.pdf
+- Learn forecasting this summer! Metaculus, Bridgewater competition style
+- Other resources:
+    
+    “Joel Grus’s Data Science from Scratch (O’Reilly) presents the fundamentals of Machine Learning and implements some of the main algorithms in pure Python (from scratch, as the name suggests).
+    
+    Stephen Marsland’s Machine Learning: An Algorithmic Perspective (Chapman & Hall) is a great introduction to Machine Learning, covering a wide range of topics in depth with code examples in Python (also from scratch, but using NumPy).
+    
+    Sebastian Raschka’s Python Machine Learning (Packt Publishing) is also a great introduction to Machine Learning and leverages Python open source libraries (Pylearn 2 and Theano).
+    
+    François Chollet’s Deep Learning with Python (Manning) is a very practical book that covers a large range of topics in a clear and concise way, as you might expect from the author of the excellent Keras library. It favors code examples over mathematical theory.
+    
+    Andriy Burkov’s The Hundred-Page Machine Learning Book is very short and covers an impressive range of topics, introducing them in approachable terms without shying away from the math equations.
+    
+    Yaser S. Abu-Mostafa, Malik Magdon-Ismail, and Hsuan-Tien Lin’s Learning from Data (AMLBook) is a rather theoretical approach to ML that provides deep insights, in particular on the bias/variance trade-off (see Chapter 4[…]”
+    
+
+## Chapter I: The Machine Learning Landscape
+
+- Remember that OCR (Optical Character Recognition) has been around for decades. The first ML application that became successful and mainstream was the email spam filter
+- Why do machine learning? Think about the email spam example. How would you write a program to do this? It would be a rule based system based on experience. Spam emails typically have X, Y, and Z. However, the situation is way more complex than that, so the rules become more and more complicated, the codebase is a nightmare to maintain, etc. Just a boneheaded way of doing things. Also, spam senders would update the way they do spam emails, which would require your intervention and the program to be updated in the non ML way. ML should be able to handle that dynamically!
+
+ML is helpful to help humans learn. This is easy for some algorithms and difficult for others i.e. the interpretability of the algorithms used. But, we could ask the model: hey, what have you learnt about this? For example, trees. This is also called data mining
+- It is a good idea to run your dataset through a dimensionality reduction technique before feeding it to another ML algorithm
+- Know the difference between novelty detection and anomaly detection. In a dataset of dogs, where 1% of the dogs are chihuahuas, novelty detection will not treat new pictures of chihuahuas as novelties but anomaly detection algorithms will probably think these dogs are so rare and different that they’ll be treated as anomalies
+- Association rule learning → Unsupervised method
+Find correlations between features
+- Deep Belief Networks (DBNs) and Restricted Boltzmann Machines (RBMs)
+- DeepMind’s AlphaGo (2017) was an RL agent
+- Know that batch learning takes time, and you have to retrain a new model when you have new data. While this can be automated, online learning is a better idea. Also, in certain use cases, you cannot do this. Example, ML agents on Mars. Limited time. Compute. Train the model incrementally or by using mini-batches
+- You may want to run an anomaly detection algorithm on the data itself before it is passed onto the main model, especially in the online learning case because bad data would make the model become worse. In a live system, clients would notice and this matters. Furthermore, you want to have the ability to stop learning as well as roll back to previous model versions
+    
+    ### Types of models and errors
+    
+- Two main approaches to generalization: instance and model based. The former is trivial. Almost similar to rule based systems. It learns by heart and applies that to new instances. Build a model of example i.e. a linear regression model. To obtain the values of the two parameters we’ve defined for linear regression, we need a performance measure
+- Utility/fitness function versus cost function. Higher and lower values better respectively
+- If you’re trying to figure out why your model isn’t so good, we can think in terms of potential bad model algorithm or bad training data
+
+Insufficient quantity of training data
+    
+    Non-representative training data. For the data to generalize well, the training data must be similar to it. Duh. Missing a few countries in the country GDP example shown in the text, significantly alters the slop and (maybe the bias) of the regression model. Meaning? Our training data must be as close as possible to the data we’ll see in the wild. If your sample is too small, you will have sampling noise. By pure chance, you may encounter examples not representative of your actual data… But if the data collection as a whole is flawed i.e. sampling bias, even larger samples may be inaccurate. Nonresponse bias is also a thing… Ruling out people, in the example, who don’t care much for politics, etc
+    
+    You need to decide how you’ll deal with NaN values. Drop the color, fill in (if so, using what strategy), remove those rows, train one model with it and one without it (A/B test them), or what
+    
+    Garbage in, garbage out. Coming up with a good set of features to train on = feature engineering
+    
+- Bad algorithm = overfitting/underfitting/bad model etc I’m thinking
+Overfitting = model does really good on training error but does badly on validation/training sets. Tries to fit every training data point wildly. In a sense is memorizing things way too hard. 
+
+This is a really good point. Complex models like neural networks detect really subtle patterns within data. If the training set is noisy, too small, or you’ve made a mistake in feature selection, the model may learn patterns within the noise itself. For example, if you included a country name feature in your life satisfaction estimator model, your model may learn that countries with w (New Zealand, Sweden, Norway) have a high GDP. But would that model estimate Rwanda or Zimbabwe correct? Probably not. Overfitting is dangerous. Overfitting fixes = make the model simpler, add more data, or reduce noise via removing outliers/fixing data errors
+- You can use regularization to constrain the model parameters as a remedy to overfitting. How to think about regularization and overfitting/underfitting? Think about y = mx + b, a linear regression model. Our parameters are m and b, but what if you made b = 0? The model no longer has two parameters it can tweak, since b has been set to 0. It can only change the slope which likely will not be enough to fit certain data well. This right here is underfitting. If we take both m and b, we may fit too well (overfitting). What if we regularized one of the parameters (or both!) to keep the values of m and b small but not zero? Then we could have between 1 and 2 “degrees of freedom” that the model can tweak (1 when b = 0 and 2 when the model can freely move m and b). This is a balance between overfitting and underfitting and is the exact reason why regularization is a powerful strategy in ML
+- Underfitting is when you need a more powerful model, the data is more complicated. A linear model on life satisfaction is guaranteed to underfit as that is just a much more complex idea. Also better features helps here. Reduce the regularization parameter (-_-)
+    
+    ### How and why to divide training data
+    
+- Having a validation set works really well. But if the size of it is too small → model evaluations, hyperparameter selection will be imprecise. Too big validation set is also a problem because we want to train our models with the most data. Solution: cross validation. The drawback? Training time increases with number of cross validation folds.
+
+Sometimes we have a data mismatch in that it isn’t representative of data that will be used in production. Example, if you want to create an application that classifies flower pictures acquired from a mobile app, you will find millions of pictures of flowers on the internet, but you’ll only have a handful of (or nothing at all) flower pictures taken by the app. Here, we want to make sure that the validation and test set will use these pictures. Now, when you release your model into production, if the model doesn’t perform as well, you don’t know if this is due to overfitting or the mismatch between train data and production data. One solution is to hold out some of the training set data to a train-dev-split. Once a model is trained, we check out its performance on the train-dev-split. Then we know for sure if it’s the data or not. But if it does badly on the validation set, we know this is due to the data mismatch and we must start pre-processing. But if it does badly even on the train-dev-split, we have overfitting.. So 4 sets total. Train, train-dev, validation, and testing
+- No free lunch → there is no reason to prefer one model category over another. We cannot know a priori what’ll work better, so we just have to try a selection that makes sense for the data, the problem, etc!
+
+### Questions
+
+1. How would you define Machine Learning?
+
+Machine learning is the art and science of using statistical, probability based, methods to learn patterns from data that we otherwise cannot see, leveraging the vast numerical calculations that our computers are able to do.
+
+2. Can you name four types of problems where it shines?
+
+Rapidly changing situations (dynamic-ness)
+When there are way too many rules to encode
+When we have no algorithmic solution
+To help humans learn
+
+3. What is a labeled training set?
+
+When the questions we want to train the model to answer also has answers so the model has visibility into its progress
+
+4. What are the two most common supervised tasks?
+
+Regression and classification
+
+5. Can you name four common unsupervised tasks?
+
+Dimensionality reduction, clustering, anomaly detection, association rule learning
+
+6. What type of Machine Learning algorithm would you use to allow a robot to walk in various unknown terrains?
+
+Training the robot using reinforcement learning on the unknown terrains 
+
+7. What type of algorithm would you use to segment your customers into multiple groups?
+
+Clustering if you don’t know how to define the groups. But if you do, and have examples of doing this, you can use classification
+
+8. Would you frame the problem of spam detection as a supervised learning problem or an unsupervised learning problem?
+
+Supervised because we want to give examples of spam to our model, and we can because it would be relatively easy to generate a labelled dataset of spam or ham, especially now in 2025, with Kaggle and all
+
+9. What is an online learning system?
+    
+    
+    Online learning leverages the fact that we can train (and re-train) models incrementally. Even once a model is trained, it will still be periodically retrained on the new data. This helps because we want our model to be flexible and adapt to new, changing patterns within the data too. Once trained, we can discard the example, which is a big benefit. Here, we often have one-example mini-batches if you prefer this analogy
+    
+10. What is out-of-core learning?
+    
+    Some datasets are so large that we cannot fit it all into memory. So, out-of-core learning is similar to creating mini-batches 
+    
+11. What type of learning algorithm relies on a similarity measure to make predictions?
+    
+    Instance based models
+    
+12. What is the difference between a model parameter and a learning algorithm’s hyperparameter?
+
+A model’s parameter = m and b in linear regression. Changing these values changes the model’s predictions directly i.e. changes the model in a way. Hyperparameters, like lambda or step_size, will affect the way an algorithm learns rather than the algorithm itself
+
+Model parameter = determines what the model will predict given a new instance i.e. slope and bias in linear regression
+
+Model hyperparameter = affects the learning algorithm used to find these parameter values
+
+13. What do model-based learning algorithms search for? What is the most common strategy they use to succeed? How do they make predictions?
+    
+    They search for the best possible parameter values whether it be linear regression of trees such that generalization error is minimized. It is an optimization problem. It will try to fit the training data in the best possible way and will be tested using a performance measure. The goal while training will to minimize this error. Once trained, they make predictions by utilizing the fitting methodology i.e. the line that is drawn thanks to training in the linear regression example i.e. using the trained parameter values and passing the new instance’s features into the trained model
+    
+14. Can you name four of the main challenges in Machine Learning?
+
+Biased data
+Uninformative features
+Poor data quality (errors, this, that)
+Changing data (the adaptability problem)
+Non-representative data
+Overfitting
+Underfitting
+
+15. If your model performs great on the training data but generalizes poorly to new instances, what is happening? Can you name three possible solutions?
+
+We are overfitting. Increase training data, simplify the model, regularize, reduce the number of features used, determine if this is due to data mismatch between training and validation set
+
+16. What is a test set, and why would you want to use it?
+
+We will use all the data we have for training and hyperparameter selection, but we want one more unbiased set of data to do our final holdout evaluation on. We want this data to be fresh, untouched, representative of the data we find in production
+
+17. What is the purpose of a validation set?
+
+So we can select hyperparameters using a fresh set outside of training. Testing is not to be touched until the end, so naturally, we want another set to do this parameter tuning on
+
+18. What is the train-dev set, when do you need it, and how do you use it?
+
+It is not always 100% clear that we are overfitting when we release our models into the wild and they underperform. This could also be due to data mismatch between training and validation/testing sets. It isn’t always easy to collect data that is 100% representative of what you’ll find in production, so. In order to find out for sure if we’re overfitting or this is just a data mismatch issues, we can have a subset of the training set called the train-dev set. 
+
+When we train the model, test it on the train-dev set, our model can do well or bad. If it does bad, we’re overfitting (underfitting will have been handled already because in that case we wouldn't do well in either training or train-dev. Errors will be high). But assuming we don't underfit and if it does well on both train and train-dev and well on validation set.. good! If it does badly on the validation set, we’re seeing a data mismatch. Because, in the overfitting case, our model would have done badly on the train-dev set itself, catching it earlier in the pipeline. The only possible thing if it does good on that set but badly on the validation set, is due to something unforeseen like data mismatch. Now we have to spend time to make the training data more like the data found in production i.e. the validation/test sets (hopefully)
+
+19. What can go wrong if you tune hyperparameters using the test set?
+
+The test set will have become biased, as our models will have seen it multiple times. We will pick hyperparameters optimized for that set, so when we do our final evaluations, it will lead us astray)
