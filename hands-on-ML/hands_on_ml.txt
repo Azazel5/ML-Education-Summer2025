@@ -1,5 +1,3 @@
-# Hands on ML
-
 ## Preface
 
 - Geoffrey Hinton et al reignited the interest in deep learning back in 2006 → https://www.cs.toronto.edu/~hinton/absps/ncfast.pdf
@@ -154,4 +152,471 @@ When we train the model, test it on the train-dev set, our model can do well or 
 
 19. What can go wrong if you tune hyperparameters using the test set?
 
-The test set will have become biased, as our models will have seen it multiple times. We will pick hyperparameters optimized for that set, so when we do our final evaluations, it will lead us astray)
+The test set will have become biased, as our models will have seen it multiple times. We will pick hyperparameters optimized for that set, so when we do our final evaluations, it will lead us astray 
+
+## Chapter 1 lab
+
+- What does pivot do? For instance, let’s look at this our df with these columns:
+
+```
+Index(['LOCATION', 'Country', 'INDICATOR', 'Indicator', 'MEASURE', 'Measure',
+       'INEQUALITY', 'Inequality', 'Unit Code', 'Unit', 'PowerCode Code',
+       'PowerCode', 'Reference Period Code', 'Reference Period', 'Value',
+       'Flag Codes', 'Flags'],
+      dtype='object')
+```
+
+When we run oecd_bli.pivot(index="Country", columns="Indicator", values="Value"), we end up with: 
+
+```
+Index(['Air pollution', 'Assault rate', 'Consultation on rule-making',
+       'Dwellings without basic facilities', 'Educational attainment',
+       'Employees working very long hours', 'Employment rate', 'Homicide rate',
+       'Household net adjusted disposable income',
+       'Household net financial wealth', 'Housing expenditure', 'Job security',
+       'Life expectancy', 'Life satisfaction', 'Long-term unemployment rate',
+       'Personal earnings', 'Quality of support network', 'Rooms per person',
+       'Self-reported health', 'Student skills',
+       'Time devoted to leisure and personal care', 'Voter turnout',
+       'Water quality', 'Years in education'],
+```
+
+What’s happening? Pivot converts the dataset from long format to wide format. As you can see, there are a lot more features in the pivot-ted version. Index is what each row will be: here each row is a country. Columns = a new column for every value here. So, the features you see are all unique values of the indicator column, as I’ll confirm below: 
+
+```
+Pivot check:  ['Dwellings without basic facilities' 'Housing expenditure'
+ 'Rooms per person' 'Household net adjusted disposable income'
+ 'Household net financial wealth' 'Employment rate' 'Job security'
+ 'Long-term unemployment rate' 'Personal earnings'
+ 'Quality of support network' 'Educational attainment' 'Student skills'
+ 'Years in education' 'Air pollution' 'Water quality'
+ 'Consultation on rule-making' 'Voter turnout' 'Life expectancy'
+ 'Self-reported health' 'Life satisfaction' 'Assault rate' 'Homicide rate'
+ 'Employees working very long hours'
+ 'Time devoted to leisure and personal care']
+
+Pivot index labels:  Index(['Australia', 'Austria', 'Belgium', 'Brazil', 'Canada', 'Chile',
+       'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany',
+       'Greece', 'Hungary', 'Iceland', 'Ireland', 'Israel', 'Italy', 'Japan',
+       'Korea', 'Luxembourg', 'Mexico', 'Netherlands', 'New Zealand', 'Norway',
+       'OECD - Total', 'Poland', 'Portugal', 'Russia', 'Slovak Republic',
+       'Slovenia', 'Spain', 'Sweden', 'Switzerland', 'Turkey',
+       'United Kingdom', 'United States'],
+```
+
+Check it out, the pivot check variable is just all unique values in the “Indicator” feature of the dataset before the pivot. *Pivot sorts the features lexicographically, but they’re the same features!* Furthermore, if you do pivotted_df.index, you’ll see a list of country names because you passed index=”Country”. Each cell is the corresponding Value column. Basically, this is a way to reshape the dataframe
+
+- And what does set_index do?
+
+```
+gdp_per_capita.set_index("Country", inplace=True)
+```
+
+```
+Before set_index:  Index(['Country', 'Subject Descriptor', 'Units', 'Scale',
+       'Country/Series-specific Notes', 'GDP per capita',
+       'Estimates Start After'],
+      dtype='object')
+      
+What does set_index do????:  Index(['Subject Descriptor', 'Units', 'Scale', 'Country/Series-specific Notes',
+       'GDP per capita', 'Estimates Start After'],
+```
+
+Clearly, the Country column has been taken out. Now, we can access it via the index attribute. When you do that, you’ll get back all the values of the Country column. Why do this? First, it takes the Country out of the training process. Makes sense. Next, we’ll be able to use .loc(”Nepal”) to get back the row associated with Nepal
+
+- With all of this, we can pass left_index and right_index as True, True in the pd.merge call. These parameters tell pandas which axes to merge on. There are multiple ways to do this. You can also have the “on” parameter working in combination with left or right index
+- What does np.c_ do? In the code’s example, only one thing is passed to it i.e. np.c_[df[’one_feature’]] which converts the 1D pandas series into a 2D column vector. If more arguments were passed, it would stack them side by side and make the columns wider.
+
+![image.png](attachment:63244676-bfe7-4b60-baa3-1c8c400f2d6c:image.png)
+
+- You can use pandas.plot functions. Then you can call plt.aixs(xmin, xmax, ymin, ymax) on the resulting graph!
+
+plt.annotate to put text annotations the graph with shapes. Taken the actual data coordinates and the text positions
+
+plt.text to have text beside the line drawn. It can have well formatted text, including superscript or subscript. Example,
+    
+    plt.text(40000, 2.7, r"$\theta_0 = 0$", fontsize=14, color="r")
+    plt.text(40000, 1.8, r"$\theta_1 = 2 \times 10^{-5}$", fontsize=14, color="r")
+    
+    The way to understand this regression model is bias = 0 and $slope = 2\times10^{-5}$. We plotted X and 0 + 2X / 10000. If you plot X and 4 + 5X/100000, we get bias = 4 and $slope = 5\times10^{-5}$
+    
+- You can de-structure a series object like so: x, y = series (assuming series has two features)
+- For LinearRegression (and other models), there are attributes in place that will tell you important things after training, like intercept_ or coef_. Sklearn’s LinearRegression also handles multi-output scenarios, so the shapes of these arrays may seem weird (1D for intercept_ but 2D for coef_). The input data and your target variable determines these, so it’s best to utilize what you learnt this semester and track your arrays shapes and sizes rigorously
+- ridge = linear_model.Ridge(alpha=10**9.5)
+
+Then you fit data to the ridge object
+
+### Chapter 1 extras
+
+### A Fast Learning Algorithm for Deep Belief Nets
+
+https://www.cs.toronto.edu/~hinton/absps/ncfast.pdf
+
+- The use of tied weights to construct complementary priors may seem like a mere
+trick for making directed models equivalent to undirected ones. As we shall
+see, however, it leads to a novel and very efficient learning algorithm that
+works by progressively untying the weights in each layer from the weights
+in higher layers
+- The infinite directed net is equivalent to Restricter Boltzmann Machines, a single layer of hidden units not connected to each other but have undirected symmetrical connections to visible units
+- Boosting was an idea from 1995, by Freund et al!!
+- Very, very difficult to understand, so I’m moving on. Try again some other time
+
+### Scaling to a very very large corpora for natural language disambiguation
+
+https://dl.acm.org/doi/pdf/10.3115/1073012.1073017
+
+- While data generation has exploded with the internet, in NLP, practitioners had siloed themselves into fixed datasets and never tried to utilize those algorithms to a really large corpus, for example
+- Confusion set disambiguation = sets of words frequently confused for each other, examples {than, then}, {center, centre}, {loser, looser}
+- This work was motivated by creating better grammar checkers. Instead of going the more expensive route or optimizing algorithms or engineering better features, the authors thought, “what would be the effect of scaling the data up orders of magnitude?”. They tested on these models: winnow1, perceptron, naïve Bayes, and a very simple memory-based learner
+- The results demonstrate that we should think more when it comes to spending our time and money on algorithm development versus data collection (corpus development)
+- “Voting” is being talked about now, likely they’re talking about ensemble methods. The question is though: while voting definitely reduces bias and noise for a specific learner, will it still perform that when for these big corpuses?
+- If two learners make different errors or correct predictions on different instances, they are considered complementary. High complementarity means they can compensate for each other’s weaknesses, which is useful in ensemble methods (e.g., boosting, bagging).
+
+And this metric increases with increasing corpus size. Does this mean voting loses its effectiveness? Beyond 1 million words, little is gained by voting. On the largest training sets, it actually hurts accuracy, so voting is a useful technique for small datasets in the NLP case
+- Now the question becomes, how do we get such a large corpus of LABELED data with the least amount of cost possible? Active and unsupervised learning
+
+### Methods
+
+- Active learning = Not all samples are the most useful. This method is intelligently picking some un-annotated samples from the the pool that provide the greatest utility. The more uncertain the classification label, the more valuable it is for training (like you assumed correctly in CS 178 final project with Doccano NER and sentiment analysis)
+- Committee based sampling → create a committee of samples and see how different the classified labels are amongst them
+- However, we see that the larger the pool of candidate instances for annotation is, the
+better the resulting accuracy. Fixed additional annotation cost this way
+- “Weakly” supervised learning = unsupervised learning (-_-). Is there something to be gained by combining supervised and unsupervised methods? In active learning, we chose the most uncertain (highest entropy) cases for human annotation. Here (unsupervised learning), we’re going to choose instances that have the highest probability of being correct for automatic labeling (being included in the labeled training set)
+- As more and more classifiers agree, accuracy that the example was labeled correctly increases
+
+### Interesting further reading
+
+- Banko & Brill 2001
+- Bagging (Breiman, 1996)
+
+### The Unreasonable Effectiveness of Data
+
+https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/35179.pdf
+
+- Even though Google released the trillion-word corpus, it consists of errors and is very unclean as it is taken from web pages: but it still is better than perhaps the million word Brown corpus, and this is precisely the unreasonable effectiveness of data
+- We find that useful semantic relationships can be automatically learned from the statistics of search queries and the corresponding results, or from the accumulated evidence of Web-based text patterns and formatted tables, in both cases without needing any manually annotated data
+- Short sequences of consecutive words are called n-grams (”Betty bought”, “a bit of butter”)
+- Simple models and a lot of data trump more elaborate models based on less data. Memorization is a good policy when you have lots of data
+- For those worried about the curse of dimensionality and overfitting, experimental evidence suggests that throwing away rare events (unique rows) is almost always a bad idea because much Web data consists of individually rare events but when combined together they form a pattern
+- Learning from the web is scalable: use overt statistics of words and word co-occurrences
+- Because of a huge shared cognitive and cultural context, linguistic expression can be highly ambiguous and still often be understood correctly → this is the authors talking about the difference of “semantic” web versus interpretation. The semantic interpretation problem is the bigger one… 
+
+The same meaning can be expressed in many different ways, and the same expression can express many different meanings.
+- Extract context from table labels. Context is so important here
+That is, from the user query “Apple Computer stock price” and from the other information we know about existing classes and attributes, we can confirm that “stock price” is an attribute of the “Company” class
+
+FOLLOW THE DATA. Represent it all using non-parametric methods, rather than trying to summarize it with parameters
+
+### The Lack of A Priori Distinctions Between Learning Algorithms
+
+https://watermark.silverchair.com/neco.1996.8.7.1341.pdf?token=AQECAHi208BE49Ooan9kkhW_Ercy7Dm3ZL_9Cf3qfKAc485ysgAAA1YwggNSBgkqhkiG9w0BBwagggNDMIIDPwIBADCCAzgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMfDJvncgHmQLXOGGtAgEQgIIDCf2w6SBuGvcE7c8dHnmOirWvtNfU0kuOLkQm926EP5vz3omX-IOS5YF_KBYLZcTZKtkD4r5XMgVQrfhqN-5pEl3LolLaI6YacjPuf_0dB1Muu2KLXrqB1yjAea3MfKvB8q_gbGaWER_-An4lQfzxeNp5Xa5h_VixpExrelpCuP6j43C3ppI7cDQVuz2eMk4049dtfyuQUso4ZtNsj_OorNOo-ossa9thPqVqwC9SI21UfY6lI4tNUUR3gZbsHS7NsaSx9AnElfKaPfZvvi-XVrXOu7mnGhLxAaKO4T6VMIYLHJfqV_lHZBvQgFUEyJBJqpYgRRu6rzlA-WWTRbjic7ZRbJMDmDOJsfUTFaluArI_5cWbj5Jv06VCtgN4siWVDIr1Pvc3EZ0UWyR81RWtBsXYE1Kr63GSHP3UoG4aR4_H_grexUUrwA-otY7Nu-AjhRNsuAinUbkkXBucenOY5Hn9t7f0Own6qUQYjsPKax-ZEq9tzAxlbppjDC_pufQlZADQkOesVPCXQz_AIvqosvINrGlbYVvLTXtw6lSHNlfvXvq8D0Q__CklkJIobDg8jmlryFAuP0yWzVIcXODa-vZg09Vr1jwTvK98asq0nfpKU3nipIgajC25F5jwlGO76QGrPHcNGtpm0LGGcr4sis9iS6EsFvoL-iTe2uRvEnnO6Nj5jIx9EOs4eqRC847dqiJ8bZw-UKmbRvGyTxZRc_M4vNHAo476ypwCHLGRXhhsHIk7zjaqD_Ppp2zenk6lYQiDjsIAM4Lc8zrDoFKnLOWfKQCfD_5RDNGRYy8FWWOSiYhfGzDHmc5I8ALqHT_D0v0GMyxd2oYvMuto3fWdgs9rv6Ndn7YjtblJSZagZ3IqNsPFhVQNLy5h8Aj6Fj7gZcVjxTyNs0ird5excyNEQzaTTARfYeAe06Jt6Sjf4BNR09_zv_ea2VZXLZ9v0mloWP7XZiVIvtNCrBYytOPgtjwb5jYlXDzTtJRjSo1hl_s2YRFrIh52MSee6BvB3aA_8q4QIxUtoVeDyw
+
+- Fockin’ paper is 50 pages long. Continuing to chapter 2 mate! Come back to this
+
+## End-To-End Machine Learning Project
+
+### Machine learning project checklist: Appendix B
+
+- Main steps = frame the problem/look at the big picture, get the data,  explore the data to gain insights, prepare the data better to expose underlying patterns to ML algorithms, explore many different models and shortlist the best one, fine tune the selected model, present your solution, and launch/monitor/maintain your system
+- #1 → Frame. What is the objective in business terms? How will the solution be used? What are the current (ideally state of the art) solutions or workarounds if any? Is the problem supervised/unsupervised online/instance based/batch, etc? Dig. How should performance be measured? Is the performance measure aligned with the business objective? Minimum performance required to meet that? Comparable problems, can you reuse logic and/or code? Is human expertise available? How would you solve the problem manually? List all assumptions you and others have made so far. Verify assumptions if possible
+- #2 → Get the data. This part should be automated as much as possible to routinely get fresh data in whatever way you’d like (push to new data to the top or delete old data, etc). List the data you need and how much you need. Find and document where you can get the data. Check how much space it will take, and where you’ll hold it. Legal obligations and get authorization if needed. Convert the data to a format you can easily manipulate. Ensure sensitive information is deleted, protected, or anonymized. Check the size and type of data (time series, sample, geographical, etc.)
+- #3 → Explore the data (EDA time). Create a copy of the data for exploration, if doable. *Note - don’t do EDA on the test set. Do global EDA first, before diving the data into a test set. As you do this, **form hypotheses about what kinds of patterns you expect in** production (because we want the validation/testing data to be representative of what we find in production).
+
+You can also verify representativeness algorithmically without peeking at the labels. Unsupervised checks available. It is the looking at test set labels that’s the problem, after all*
+
+Study each attribute and its characteristics. Name, type (categorical {think of the cardinality}, int/float/string, structured {clear schema, fields, columns}, bounded/unbounded {age versus income as an example for bounded vs unbounded}). Ask business/domain questions: what are sensible ranges for this attribute? 
+
+For supervised tasks, identify target variable. Study correlations between features. Study how you’d solve the problem manually. Identify the transformations you’d like to apply (what changes or feature engineering steps? Perhaps adding more data by augmenting images, i.e. data augmentation? Un-skewing a distribution? ). Identify extra data that’d be useful. Document what you’ve learnt
+- #4 → Prepare the data. Work on copies of the data. Write functions for all data transformations you apply (various reasons why. Take the long term view, just do this). 
+
+Data cleaning = fix or remove outliers. Fill in values and document why you did it this way
+Feature selection 
+Feature engineering = discretize continuous features. Decompose features. Example, continuous (one-hot, ordinal, target/frequency, or embeddings), date-time (into day, month, year or cyclical format with sin/cos). REMEMBER: models need numerical inputs
+
+Add promising transformations of features. Aggregate features into promising new features
+
+Standardize or normalize features
+- #5 → Shortlist promising models. “If the data is huge, you may want to sample smaller training sets so you can train many different models in a reasonable time (be aware that this penalizes complex models such as large neural nets or Random Forests).” All models will suffer from lesser data, but larger models will suffer more: they’re just thirstier 😏 They have a lot of parameters so they can latch onto random noise when the data is sparse. A high-capacity learner might need thousands or millions of examples to tame its variance; a low-capacity learner might need only dozens
+
+Automate as much as possible. Train quick and dirty models across model categories with default parameters. Use N-fold cross-validation and compare mean and standard deviation of performance measure in the N-folds. Analyze most significant variables for each algorithm. Look at the type of errors (example, confusion matrices, ROC curves come in here) (what data would a human would have used to avoid these errors. This could go [into this bit](https://www.notion.so/Hands-on-ML-1f9ff0af7ee380829bf6f6bed58c8533?pvs=21)). Do a quick round of feature selection and engineering (but I will already have done that earlier. Maybe I should save it for this bit because we’ll be able to be more informed with our features and see how that affects model performance). One or two more iterations of the last couple steps. “Shortlist the top three to five most promising models, preferring models that make different types of errors.”
+
+In my mind, I will compare the models against baseline (only pre-processed first). And then do several iterations of feature engineering and selection, as I will see which features are important for which models and how these improve performance. Feature engineering and selection belongs in this step, not the earlier one
+- #6 → Fine tune the system. Use cross-validation, use as much data as possible. Treat your data transformation choices as hyperparameters, especially when you are not sure about them (e.g., if you’re not sure whether to replace missing values with zeros or with the median value, or to just drop the rows). Remember that random search covers more the feature space, unless you have very few values to test. If training is taking too long, use a [Bayesian optimization approach](https://www.notion.so/Hands-on-ML-1f9ff0af7ee380829bf6f6bed58c8533?pvs=21)
+
+Try ensemble methods
+
+Once you’re confident about your model, find out the potential generalization error on the test set
+- #7 → present. Document everything. Create a nice presentation, with biggest picture first. Explain why the solution meets the business objective. Present interesting points noticed along the way, what worked what didn’t (why, in your opinion), list all the assumptions and the system’s limitations
+    
+    Ensure your key findings are communicated through beautiful visualizations or easy-to-remember statements (e.g., “the median income is the number-one predictor of housing prices”)
+    
+- #8 → Launch. Write unit tests. Write monitoring code which checks model performance at regular intervals and triggers alerts when it drops under a certain level (and reverts to a previous model checkpoint if needed). Some points:
+
+Beware of slow degradation: models tend to “rot” as data evolves.
+    
+    Measuring performance may require a human pipeline (e.g., via a crowdsourcing service).
+    
+    Also monitor your inputs’ quality (e.g., a malfunctioning sensor sending random values, or another team’s output becoming stale). This is particularly important for online learning systems
+    
+    Retrain your models on a regular basis on fresh data (automate as much as possible)
+    
+
+### California Median Housing Price
+
+- How to frame the problem? Important! Think: will my model be used in a downstream service? Does it utilize some other service upstream? How will these things happen, and what are the expectations, and what things will these models generate?
+- A collection of data processing components = data pipeline
+- Okay, let’s answer the questions. We have a problem where we need to predict the median housing price in any district. This is a supervised, univariate, multiple regression task. Univariate because we’re predicting only one value with many features. Batch learning will be fine because: no continuous flow of data, dataset is small enough to fit in memory, no need to adjust to new data rapidly.
+    
+    
+    If the data were huge, you could either split your batch learning work across multiple servers (using the MapReduce technique) or use an online learning technique
+    
+    Here the RMSE performance measure will be fine. But think, why? In what cases would MSE or MAE be better? RMSE = euclidean or l2 norm. MAE is the manhattan or l1 norm. The higher the norm index, the more it focuses on large values and neglects small ones. This is why the RMSE is more sensitive to outliers than the MAE. But when outliers are exponentially rare (like in a bell-shaped curve), the RMSE performs very well and is generally preferred
+    
+    What if the downstream service converts the values we generate into discrete categories i.e. “Cheap”, “Medium”, and “Expensive”? We made an implicit assumption that they wouldn’t do that, which is exactly why it is important to ask digging questions to the person driving the product. 
+    
+
+### Code
+
+- Making sure of version numbers are important. Checking Python version and package version:
+
+```python
+assert sys.version_info >= (3, 5)
+assert sklearn.__version__ >= "0.20"
+```
+
+- Exporting environment variables into your shell allows you to make doing stuff easier. Example, export PATH=”/Desktop/Tufts/ML” and mkdir -p $PATH
+- Features with not much variance err towards the “useless” category. They could be dropped… BUT, think if they can come in handy to feature engineer. A nearly constant raw feature might interact with another to produce a high-variance, high-value signal (e.g. year-of-birth barely varies in your dataset, but when combined with age it matters)
+- In NLP or recommendation systems, a “low-variance” categorical (e.g. a very common tag) might still carry semantic weight once embedded
+
+With these caveats, remember that sklearn provides a VarianceThreshold class too
+- Plot a histogram for all numerical features. Use %matplotlib inline in Jupyter. .show() is optional in Jupyter
+
+### Practically following the checklist
+
+- The housing median age and the median house value were also capped. The latter may be a serious problem since it is your target attribute (your labels). Your Machine Learning algorithms may learn that prices never go beyond that limit. You need to check with your client team (the team that will use your system’s output) to see if this is a problem or not. If they tell you that they need precise predictions even beyond $500,000, then you have two options:
+    
+    
+    Collect proper labels for the districts whose labels were capped.
+    
+    Remove those districts from the training set (and also from the test set, since your system should not be evaluated poorly if it predicts values beyond $500,000)
+    
+- Fix the scales of the features. And if some of them are tail-heavy, transform them to be more bell-shaped, as this translates to better model performance
+
+### Sampling and splitting
+
+- Think about it: you want the data in the test set to remain consistent, even if you add more data, refresh/update it, etc. So, finding a more intelligent way to save new instances to the test set, a heuristic of some kind, is a good idea. Example, if the new instance’s identifier hash < 20% of the maximum hash value, put it in the test set or something
+- Random sampling methods are fine with large datasets, but they could introduce sampling biases. You don’t just randomly sample because you want sets (especially validation and test) to be representative of certain things. This is why we have StratifiedSampling.
+- pd.cut to slice series into bins while giving them labels too! You want each stratum to large enough and not have too many strata.
+    
+    “housing["income_cat"] = pd.cut(housing["median_income"],
+    bins=[0., 1.5, 3.0, 4.5, 6., np.inf],
+    labels=[1, 2, 3, 4, 5])”
+    
+- **StratifiedShuffleSplit** guarantees your train/test partition preserves the income-category distribution
+
+### Doing EDA
+
+- Create a copy of the training set before you start playing with it to do EDA
+- Look for correlations for features, start with df.corr(). These correlations only measure linear correlations and completely fail higher dimensional correlations
+
+![Correlation coefficient of these non-linear examples are all 0, but their axes are clearly correlated!!!](attachment:20214393-2fed-4eb7-a16d-ca692731b30a:image.png)
+
+Correlation coefficient of these non-linear examples are all 0, but their axes are clearly correlated!!!
+
+- Another way is to use pd.scatter_matrix(). Take care using this because, just with 11 features, it will create 121 computations (every feature against every other, recursively). Pandas, nicely, doesn’t plot the diagonal, which would be every feature against itself, a straight line
+- Why EDA is valuable in one figure: 
+
+This figure was acquired after doing the scatter_matrix() function and then zooming in on one which seemed strongly correlated. We see series of horizontal lines, of course, the 500K cap, but also other ones, which we may want to remove, as we wouldn’t like our algorithms to learn this stuff
+
+![image.png](attachment:9771dfea-a50d-442d-9fe9-98b1961e484c:image.png)
+
+- Combat tail heavy features by taking the log
+- Combine features for quick feature engineering. Number of rooms by itself is OK, but number of rooms per household is better
+- IMPORTANT REMINDER: This round of exploration does not have to be absolutely thorough; the point is to start off on the right foot and quickly gain insights that will help you get a first reasonably good prototype. But this is an iterative process: once you get a prototype up and running, you can analyze its output to gain more insights and come back to this exploration step
+
+### Data cleaning
+
+- Missing values? Get rid of whole feature. Get rid of rows. Fill the missing values. Whatever you do, especially if you do fillna, remember to save the values so you can easily do the same for the test set later, or for new incoming data cases in a online learning setting. When you do this, you must take out the categorical features, especially when you pass data to the Imputers
+- With categorical variables, we need to convert them to numbers before merging them back with the rest of the dataset. We have to take care because, in the case of categories [”bad”, “good”, “excellent”], clearly categories 1 and 2 are similar, but there’s no guarantees that things will work out this way: ['<1H OCEAN', 'INLAND', 'ISLAND', 'NEAR BAY', 'NEAR OCEAN'] (category 0 and 4 are more related than 0 and 1). This is exactly why one-hot encoding exists! This is where sparse matrices come in handy.
+
+If your categorical features have too high cardinality, you can think about replacing them with numerical features that represent the same thing i.e. ocean_proximity becomes distance_to_ocean. Alternatively, you could replace each category with a learnable, low-dimensional vector called an embedding. Each category’s representation would be learned during training. This is an example of representation learning
+
+### Custom Transformers
+
+- You can create your own custom “transformers” by creating a class and using BaseEstimator and TrasformerMixin as subclasses. The more you automate these data preparation steps, the more combinations you can automatically try out, making it much more likely that you will find a great combination (and saving you a lot of time)
+- ML algorithms don’t do as well when features are in very different scales (scaling target values isn’t required). Min-max scaling = normalization. Like choosing specific metrics, even specific scaling strategies have consequences (using Min-max versus StandardScaler), so have an understanding of these…
+- As with all the transformations, it is important to fit the scalers to the training data only, not to the full dataset (including the test set). Only then can you use them to transform the training set and the test set (and new data). Similar to when you do PCA
+- Scikit-learn has the ColumnTransformer, which lets you handle numerical and categorical variables as you see fit
+- What if we mix sparse and dense matrices in the pipelines? Note that the OneHotEncoder returns a sparse matrix, while the num_pipeline returns a dense matrix. When there is such a mix of sparse and dense matrices, the ColumnTransformer estimates the density of the final matrix (i.e., the ratio of nonzero cells), and it returns a sparse matrix if the density is lower than a given threshold (by default, sparse_threshold=0.3)
+
+### Building an intuition
+
+- The author tries two models. A linear regressor that underfits (RMSE of 60000) and then a DecisionTree (RMSE of 0). Meaning: we need to use cross-validation if we are to become certain we’re overfitting in the latter case. The cross-validation module of sklearn expects a utility function instead of a cost function, which is why, we put a -cross_val_score
+- Save every model you train; difficult lesson learnt from CS 135. Save both the hyperparameters, trained parameters, and the cross_validation score. Maybe even the predictions! (*There seem to be many professional reasons why you’d want to do that, so do it!*) Save these things using pickle or joblib
+- If GridSearchCV is initialized with refit=True (which is the default), then once it finds the best estimator using cross-validation, it retrains it on the whole training set. This is usually a good idea, since feeding it more data will likely improve its performance
+- GridSearchCV can help you find more than just the best parameter values. We’re talking feature selection, whether adding a feature helps or not, or even outlier handling/best imputing strategy!
+
+### 1) Lift every “decision” into a hyperparamet
+
+| “Decision” | How to expose it in a Pipeline |
+| --- | --- |
+| **Add or drop a derived feature** | Transformer with a boolean flag, e.g. |
+
+```python
+class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
+    def __init__(self, add_bedrooms_per_room=True): …
+    def transform(self, X):
+        # only compute and append bedrooms_per_room if that flag is True
+```
+
+Then in your grid:
+
+```python
+param_grid = {
+  'attribs_adder__add_bedrooms_per_room': [True, False],
+}
+```
+
+| **How to impute missing values**            | Use `SimpleImputer` in the pipeline, and tune its `strategy`:
+
+```python
+param_grid.update({
+  'imputer__strategy': ['mean','median','most_frequent'],
+})
+```
+
+| **Outlier handling**                      | Write a small `OutlierRemover(method, threshold)` transformer and expose
+
+```python
+param_grid.update({
+  'outlier_remover__method': ['none','iqr','zscore'],
+  'outlier_remover__threshold': [1.5, 3.0]
+})
+```
+
+| **Feature selection**                     | Plug in `SelectKBest()` or a custom selector in the pipeline:
+
+```python
+param_grid.update({
+  'feature_selector__k': [5,10,15,20]
+})
+```
+
+---
+
+### 2) Build your full Pipeline
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import SelectKBest
+from sklearn.linear_model import Ridge
+
+pipeline = Pipeline([
+    ('imputer', SimpleImputer()),
+    ('attribs_adder', CombinedAttributesAdder()),
+    ('outlier_remover', OutlierRemover()),
+    ('scaler', StandardScaler()),
+    ('feature_selector', SelectKBest()),
+    ('regressor', Ridge())
+])
+```
+
+---
+
+### 3) Define a single big param grid
+
+```python
+param_grid = {
+  # imputation choices
+  'imputer__strategy':          ['mean','median','most_frequent'],
+  # whether to add that extra feature
+  'attribs_adder__add_bedrooms_per_room': [True, False],
+  # outlier removal settings
+  'outlier_remover__method':    ['none','iqr','zscore'],
+  'outlier_remover__threshold': [1.5, 3.0],
+  # how many features to keep
+  'feature_selector__k':        [5, 10, 15, 20],
+  # model hyperparameter
+  'regressor__alpha':           [0.01, 0.1, 1, 10]
+}
+```
+
+### 4) Let GridSearchCV try every combination
+
+```python
+from sklearn.model_selection import GridSearchCV
+
+grid_search = GridSearchCV(
+    pipeline,
+    param_grid,
+    cv=5,
+    scoring='neg_mean_squared_error',
+    n_jobs=-1
+)
+grid_search.fit(X_train, y_train)
+```
+
+Because each step in your pipeline carries its own parameters, grid search:
+
+1. Instantiates a fresh pipeline with a specific choice for **every** hyperparameter (imputer strategy, add-feature flag, outlier method, selector k, ridge α, …).
+2. Fits it on the training folds, evaluates on the validation folds.
+3. Picks the exact combination that gives the best score
+
+- Ensemble methods are a way to fine tune models too, especially if they make different kinds of errors. This second bit is kind of important and touches upon things you learnt this semester with ensembles! If a majority vote is taken across models making different errors, then on those very points, at least one model gets it right. Also, variance is reduced with ensembles, but only to the extent that their errors are uncorrelated, especially for high variance learners: DecisionTrees, big NNs
+
+**One correct vote** doesn’t guarantee a majority if you only have two models—they need to be odd‐numbered or have a tie‐breaker.
+The more models you have, the more you rely on having **a majority of them voting correctly**.
+**Diversity of errors** (i.e. each model’s mistakes don’t overlap completely) is what lets that majority be right even when individual models fail
+- You should also look at the specific errors that your system makes, then try to understand why it makes them and what could fix the problem (adding extra features or getting rid of uninformative ones, cleaning up outliers, etc.).
+- In some cases, such a point estimate of the generalization error will not be quite enough to convince you to launch: what if it is just 0.1% better than the model currently in production? You might want to have an idea of how precise this estimate is. For this, you can compute a 95% confidence interval for the generalization error using scipy.stats.t.interval()
+    
+    > from scipy import stats
+    confidence = 0.95
+    squared_errors = (final_predictions - y_test) ** 2
+    np.sqrt(stats.t.interval(confidence, len(squared_errors) - 1,
+    ...                          loc=squared_errors.mean(),
+    ...                          scale=stats.sem(squared_errors)))
+    ...
+    array([45685.10470776, 49691.25001878])
+    > 
+
+- Even a model trained to classify pictures of cats and dogs may need to be retrained regularly, not because cats and dogs will mutate overnight, but because cameras keep changing, along with image formats, sharpness, brightness, and size ratios. Moreover, people may love different breeds next year, or they may decide to dress their pets with tiny hats—who knows?
+- Here are a few things you can automate:
+    
+    Collect fresh data regularly and label it (e.g., using human raters).
+    
+    Write a script to train the model and fine-tune the hyperparameters automatically. This script could run automatically, for example every day or every week, depending on your needs.
+    
+    Write another script that will evaluate both the new model and the previous model on the updated test set, and deploy the model to production if the performance has not decreased (if it did, make sure you investigate why)
+    
+- Also evaluate the model’s input data quality (example, malfunctioning sensor signal). Also save versions of the dataset in case the current dataset ever gets corrupted
+    
+    You may want to create several subsets of the test set in order to evaluate how well your model performs on specific parts of the data. For example, you may want to have a subset containing only the most recent data, or a test set for specific kinds of inputs (e.g., districts located inland versus districts located near the ocean). This will give you a deeper understanding of your model’s strengths and weaknesses
+    
+    This has got to happen in the validation set; the test set remains sacred
+    
+
+### Chapter 2 lab (Questions embedded into the lab)
+
+- df.reset_index() adds an Index column
+- An interesting piece of code: image is downloaded and data points are added to its top
+Download the image first. Then, use matplotlib.image as mpimg, plot the data and then call plt.imshow(my_downlaoded_image)
+
+axis=1 = columns
+- You can create to and from between sparse and dense arrays
+- Remember to actually read documentation because you have quite the amount of control with libraries like Pandas. housing.columns.get_loc(c) gives you back the column index number for a particular column
+- Calculate the confidence interval to get additional confidence that your model is doing well, according to statistics using
+    
+    np.sqrt(stats.t.interval(0.95, len(squared_errors) - 1,
+    loc=squared_errors.mean(),
+    scale=stats.sem(squared_errors)))
+    
+    Lots of statistics tools available to us here like the t-score or the z-score; one more time, the game is know what you’re doing and use something only after you understand the rationale and consequences of doing so
+    
+- It’s not just defining all the grid parameters at once either. You can define them in series of nested dictionaries. While, instead of doing it in a nested way, you could have specified all the parameters in one big param_grid, there are certain advantages to specifying a layout: in some cases, we save on computation price by doing this intelligently
+
+If doing RandomSearchCV, you will be using statistical distributions to generate potential hyperparameter values. It could be helpful to plot it just to get a looksie
+
+- https://arxiv.org/abs/1206.2944
