@@ -620,3 +620,167 @@ axis=1 = columns
 If doing RandomSearchCV, you will be using statistical distributions to generate potential hyperparameter values. It could be helpful to plot it just to get a looksie
 
 - https://arxiv.org/abs/1206.2944
+
+### Chapter 2 project
+
+- Using MSE, MAE, or RMSE
+    
+    ### 🔷 Use **MAE** when:
+    
+    - You want a **robust** metric that isn’t distorted by large outliers.
+    - All errors are equally costly (a miss by 5 or by 15 is not disproportionately worse).
+    - You care more about **median-like behavior** (it optimizes the median prediction).
+    
+    🔧 Example:
+    
+    - Predicting **typical delivery times**, **household income**, **temperature**, etc.
+    
+    ---
+    
+    ### 🔷 Use **RMSE** when:
+    
+    - You want to **penalize large errors heavily**.
+    - Outliers are meaningful (e.g., big mistakes are much worse than small ones).
+    - You're optimizing models where high accuracy is critical and large errors are expensive.
+    
+    🔧 Example:
+    
+    - Predicting **loan defaults**, **engineering tolerances**, **medical doses**, or **auction pricing** (if underpricing is costly).
+    
+    ---
+    
+    ### 🔷 Use **MSE** when:
+    
+    - You're doing mathematical optimization (e.g., in gradient descent).
+    - You don’t care about interpretability (because units are squared).
+    - You want a smooth loss function to derive gradients from.
+    
+    🔧 Used mostly as a **loss function** during training — not as an evaluation metric per se.
+    
+    ---
+    
+    ## 🚫 Should you "always penalize errors heavily"?
+    
+    No — and here's why:
+    
+    - In real life, **not all errors are equal in cost**.
+    - If small, frequent errors are tolerable, and large errors are rare and manageable, **MAE** is better.
+    - If large errors are dangerous or costly, **RMSE** is better.
+    - Over-penalizing large errors may cause the model to be overly conservative or ignore small-but-consistent bias.
+    
+    ---
+    
+    ## 🔄 Bonus: Combine Both
+    
+    Some models or competitions use:
+    
+    ```python
+    python
+    CopyEdit
+    Huber Loss = MAE when errors are small, MSE when errors are large
+    
+    ```
+    
+    ---
+    
+    ## 🔚 TL;DR
+    
+    | Goal | Best Metric |
+    | --- | --- |
+    | Robust to outliers, fair error treatment | **MAE** |
+    | Penalize large errors, smooth optimization | **RMSE** |
+    | For training gradients (not interpretability) | **MSE** |
+
+## Classification
+
+- Image data is highly dimensional because it depends on the dimensionality of the image. 28 x 28 image = 784 features!
+- Showing an image in Matplotlib:
+
+```python
+# It has to be reshapable!
+ 
+img = img.reshape(28, 28)
+plt.imshow(img, cmap='binary')
+```
+
+- Sometimes you need to shuffle the data and ensure that every cross-validation fold will have a good distribution of inputs, i.e. if doing MNIST classification, you’d want every fold to have all the digits, including training and testing too. How would we do this? Other times, maybe in forecasting or time-series contexts, shuffling is no bueno. StratifiedKFold(shuffle=True) is our best friend!
+- Remember to deal with skewed datasets
+- Just like cross_val_score, we also have access to cross_val_predict, which is useful for drawing up confusion matrices. Row = actual class; column = predicted class
+
+### Classification metrics
+
+- Precision = accuracy of the positive predictions
+
+$precision = \frac{TP}{TP +FP}$
+    
+    
+    You could make a perfect precision classifier by only making 1 positive prediction and 0 false predictions, while making everything else an FN, so this is supplemented by sensitivity/recall/TPR. The ratio of positive instances correctly classified 
+    
+    $recall = \frac{TP}{TP + FN}$
+    
+- F1 score = harmonic mean of the above metrics. This will give more weight to low values, so it will only be high if both precision and recall are high, or at least similar. Which isn’t what you always want because it depends on the context. In any case, precision and recall is a tradeoff. 
+
+Classifier for safe videos for kids = it is more important to make sure the video is good at the expense of rejecting some “good” videos, meaning precision is more important
+
+Shoplifter detection = make sure all shoplifters get caught even if there are a few false alarms, meaning recall is more important
+- Recall (haha) that changing the threshold changes your confusion matrix entirely and what instances you assign positive or negative. Scikit-learn doesn’t let you threshold directly, but you can use .decision_function(). What about predict_proba? Different reasons to use each. Decision function returns raw scores, margins, uncalibrated, and these will not be probabilities. It will be faster. Only some classifiers return probabilities, and you need to pass “probability=True” (in the case of SVMs). RandomForests don’t have decision_function
+
+### PR and ROC curves
+
+- Deciding what threshold to use = cross_val_predict with method=”decision_function”. Build the PR versus Threshold curve. Mirrors of each other. OR, build the PR curve.
+
+![image.png](attachment:984c2289-b7f3-4d56-9b3d-d58eff185664:image.png)
+
+- You need to make choices like you did in CS 135 assignments: if you want 90% precision in a project, you go for the lowest threshold value that gives you 90, which in this case is a threshold of around 8000. Why? Because going any further with precision means a sharp drop in recall, while it may not be as important in your problem, you still want to preserve that too
+- And here comes the ROC curve as one more important concept that will help finding a balance between precision, recall, etc. It plots TPR (recall) and FPR (1 - TNR → specificity)
+
+![image.png](attachment:f013db30-02c3-4a4d-ab39-5e211d5c3cbc:image.png)
+
+You want to stay away from the dashed line (random classifier) and towards the top left. Prefer PR curve when positive classes are rare or when you care more about FPs than FNs. 
+
+### Multi-class and multi-label classification
+
+- LogisticRegression and SVMs are strictly binary. Although sklearn gives you the option to use them as multi-class, this is done in a hack-y way by mixing in N number of binary classifiers for your N classes. Not ideal There are OvO or OvR (pairs of digits in MNIST) strategies here
+
+SGDClassifier on the other hand can do this natively
+- KNeighborsClassifier can do multi-label.
+- A final type is multi-output classification. Removing noise from images. Output is one label per pixel and each label can have multiple values (0 to 255)
+
+### Error Analysis (how to actually make your models better)
+
+- Confusion matrix. Use plt.matshow with cmap=plt.cm.gray (example) 
+Analyze the errors and improve by collecting more features or specific things to help with these errors. Then poke into the examples more. Code:
+
+```python
+cl_a, cl_b = 3, 5
+X_aa = X_train[(y_train == cl_a) & (y_train_pred == cl_a)]
+X_ab = X_train[(y_train == cl_a) & (y_train_pred == cl_b)]
+X_ba = X_train[(y_train == cl_b) & (y_train_pred == cl_a)]
+X_bb = X_train[(y_train == cl_b) & (y_train_pred == cl_b)]
+
+plt.figure(figsize=(8,8))
+plt.subplot(221); plot_digits(X_aa[:25], images_per_row=5)
+plt.subplot(222); plot_digits(X_ab[:25], images_per_row=5)
+plt.subplot(223); plot_digits(X_ba[:25], images_per_row=5)
+plt.subplot(224); plot_digits(X_bb[:25], images_per_row=5)
+plt.show()
+```
+
+### Lab notebook
+
+- A good way to determine if the notebook will be run on Colab, Jupyter, or Kaggle =
+
+```python
+IS_COLAB = "google.colab" in sys.modules
+IS_KAGGLE = "kaggle_secrets" in sys.modules
+try:
+    from IPython import get_ipython
+    shell = get_ipython().__class__.__name__
+    IS_JUPYTER = (shell == "ZMQInteractiveShell")
+except (ImportError, NameError):
+    IS_JUPYTER = False
+```
+
+- Normalize any confusion matrices you draw because it will help you visually,
+    
+    from sklearn.metrics import confusion_matrix(normalize=True)
