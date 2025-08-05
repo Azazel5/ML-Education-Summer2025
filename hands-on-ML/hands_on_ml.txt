@@ -784,3 +784,52 @@ except (ImportError, NameError):
 - Normalize any confusion matrices you draw because it will help you visually,
     
     from sklearn.metrics import confusion_matrix(normalize=True)
+
+
+## Chapter 4: Training models
+
+- Linear models are more complicated than we think. Linear models can be polynomial too, which is counter-intuitive
+but not really. They can be solved by the closed-form (using matrix inverses and other methods) or SGD. Regularization.
+There's the vector format to represent Linear Regression neatly, where X is the feature vector and theta is the
+model parameters. 
+
+y_hat = theta_transpose * X
+
+- The result is a single cell matrix, not a scalar
+
+- The closed-form solution mentioned above is called the normal equation
+
+Theta_hat = (X_transpose * X)_inverse * X_transpose * y
+
+- When matrices are invertable and inverses are stable, it is a good idea to calculate it and get the
+answer for least squares. When this is not possible though, we can calculate the pseudoinverse i.e. the Moore Penrose
+inverse using SVD (Singular Value Decomposition). The SVD approach is also generally considered more efficient 
+precisely because it avoids certain calculations done in the former case
+
+- While this approach is quick and easy, it isn't the best for complex ML datasets with many features. Not the most
+efficient either. Solution? Gradient Descent. GD is like trying to find your way downlhill on a dark day. You do so
+by taking steps which leads to the highest drop i.e slope is the largest. One important hyperparameter is the 
+learning rate. Too little = GD will take too long; too high = GD will be wildly inaccurate jumping from one walley
+to the other. Diverging algorithm in that case. A more fatal problem: not all cost functions are nicely convex.
+In the case they aren't, what guarantee do you have that what you find is the global minimum anyways?
+
+- Features and their scales have a direct affect on GD. When they have different scales, say if feature 1 scale is
+much smaller than feature 2, feature 1 would take a larger change to affect the cost function which would mean a
+disproportionate lengthening towards feature 1 in a feature-feature graph. Make sure to scale all features for this
+reason; otherwise GD will take longer 
+
+- We want to calculate partial derivatives w.r.t all of our features within our cost function
+
+- The gradient points uphill, so we go in the opposite direction, multiplied by the learning rate (step size)
+
+- Finding a good learning rate is important. This can be done by using GridSearchCV. The reason why we use 
+max_iter is to eliminate models that take too long to converge
+
+- How about knowing when to stop? Set the max_iter really high and stop when the gradients start decreasing too less
+
+- Batch GD, which takes the entire dataset, has little noise but takes too long, especially for large datasets.
+SGD on the other hand is more noisy but faster. It only takes one instance to gauge slope on. But then again, it
+actually has a higher probability of breaking free from local minimums, so it's good in that sense. BUT, it can
+never settle at a minimum, so the solution is to do learning rate scheduling: start large and get smaller. 
+Simulated annealing, metallurgy. 
+
