@@ -1,0 +1,51 @@
+How I use LLMS - https://www.youtube.com/watch?v=EWvNQjAaOHw
+------------------------------------------------------------
+
+
+Intro
+-----
+
+- Many LLMs out there, https://lmarena.ai/ a website which provides an interface to interact with many models and
+rank them
+
+- Seal leaderboard from Scale
+
+
+Interacting with LLMs
+---------------------
+
+- These models are really good at writing! 
+
+- Remember that every one of your queries are actually chopped into tokens. Use TikTokernizer to see how this works!
+
+- Under the hood, a lot more is happening because we save a lot of conversational metadata as well. Think about it:
+we have context windows and things like that. What looks like chat bubbles in the interface are actually 
+token streams consisting of areas where my contributions began, ended, and where the LLM's prior contributions
+began and ended too. A "New Chat" wipes the token window and resets everything! That is precisely the context window.
+
+- These models are always a little bit out of date because the pre-training process, the important bit, isn't done
+that often, as it is both time consuming and heavy on the $$ side. "Knowledge cutoff"
+Post training is the bit that transforms the contents of the internet/next word predictor machine that an LLM is
+to have "helpful chatbot vibes"
+
+Post-training is where our dataset becomes conversations of humans 
+Knowledge from pre-training, style and form from post-training
+
+The pre-training knowledge is probabilistic and slightly vague
+
+- What information is okay to ask something like ChatGPT? "How much caffeine in a shot of espresso?". This info
+isn't recent and hasn't changed much. This information is frequent on the internet! There's no guarantee that this
+is right though. We're talking about just the model, not the internet search tools available on model platforms
+nowadays. This isn't a high stakes situation either. At the same time, skepticism is paramount, especially when it
+comes to the details
+
+- Anytime you start a new topic, always make new chats. Why? Tokens are expensive. As your window grows larger,
+the model can get "distracted". Could decrease accuracy and performance. The more tokens in the window, the more
+expensive to calculate the next token, slower. Precious resource. Keep it as short as you can
+
+Pre-training -> Supervised finetuning -> Reinforcement Learning (thanks to Deepseek)
+
+- Different providers have different categories of models: thinking models or not. Some models may be good even if
+they are not thinking models. For difficult problems (eg. math and code), we'd want thinking models. Some generic
+advice? No thinking model needed. 
+
