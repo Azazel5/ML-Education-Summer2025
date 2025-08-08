@@ -1,6 +1,8 @@
 How I use LLMS - https://www.youtube.com/watch?v=EWvNQjAaOHw
 ------------------------------------------------------------
 
+Noteworthy LLMs = ChatGPT, Claude, Gemini, Deepseek, Grok, Le Chat, Perplexity, LLaMA, Copilot
+
 
 Intro
 -----
@@ -47,5 +49,42 @@ Pre-training -> Supervised finetuning -> Reinforcement Learning (thanks to Deeps
 
 - Different providers have different categories of models: thinking models or not. Some models may be good even if
 they are not thinking models. For difficult problems (eg. math and code), we'd want thinking models. Some generic
-advice? No thinking model needed. 
+advice? No thinking model needed
 
+- Tool usage: language model is just a 1TB or so zip file, a neural network with a trillion or so parameters. It
+has no tools, and it can emit a string of tokens when fed your own query, transformed into a string of tokens itself
+
+- An internet search will have a "search the internet" token which the platform will do. It will crawl all websites
+related to the query, create tokens out of it, and feed it to our model. Without internet search, the model has
+no chance to give you relively new information that is coming out AND is the type that is out there on the internet,
+example, "when is the new season of white lotus coming out?"
+
+- Sometimes these models can detect when the question references new knowledge and would perform a search by itself
+
+Real-time searching
+-------------------
+
+- This is mandatory for reasons you know by now. But use Perplixity for initial search, just to see what's out
+there. Whenever something is prone to change or changes, this is the methodology
+
+- Deep research = internet search + thinking. Lots of thinking. All thinking models pretty much use RL now
+
+- Think about it: when you upload files to LLMs, do they discard the images in them? AK thinks so. Or if the
+images are there but they're difficult to understand. Or the images are converted to text document or something so
+they can converted to a token stream
+
+- It is rarely the case that AK reads papers, books without LLMs nowadays. Think about it: it is the absolute best
+way to read. Also ask trivial questions about geography, quick fix health, etc/any question about your curiosities
+Use Eooks here. Start with a summary and then ask follow up questions. It dramatically increases his retention,
+understanding. Especially helpful for documents from other fields or past... 
+
+- Opportunity to build exactly that: whatever AK says does not exist: book reader tool =============
+
+Python
+------
+
+- Using agentic AI, giving access to a python interpreter
+Special tokens for running code
+
+- OpenAI has trained ChatGPT to recognize problems it cannot do "in its head" and to rely on tools instead
+Keep track of which LLMs have access to what tools
