@@ -61,6 +61,7 @@ example, "when is the new season of white lotus coming out?"
 
 - Sometimes these models can detect when the question references new knowledge and would perform a search by itself
 
+
 Real-time searching
 -------------------
 
@@ -80,6 +81,7 @@ understanding. Especially helpful for documents from other fields or past...
 
 - Opportunity to build exactly that: whatever AK says does not exist: book reader tool =============
 
+
 Python
 ------
 
@@ -88,3 +90,46 @@ Special tokens for running code
 
 - OpenAI has trained ChatGPT to recognize problems it cannot do "in its head" and to rely on tools instead
 Keep track of which LLMs have access to what tools
+
+Claude has an interpreter (JS), and ChatGPT does too it seems (Python), but Grok doesn't. Gemini doesn't seem
+to have that as well, although 2.5 Pro seems to be better than Grok at math
+
+- ChatGPT advanced data analyst. Pay attention to the code it writes too, it sneakily does things by itself
+The tool is powerful but needs to be scrutized very well. Watch ChatGPT advanced data analysis videos ======
+
+
+Artifacts (Claude)
+------------------
+
+- Claude artifcats are manipulable right on the platform! Use this... 
+"Use artifacts featuture"
+
+- You can use the example AK shows to practice for exams and learn material better. Not just for studies, for any
+important thing we want to memorize. Limitless. claudeartifacts.com
+
+- Diagram generation! "Conceptual diagram" "draw up a graph representing the relationships". Books, chapters, 
+source code, and more. Your creativity is your only limiting factor! 
+
+
+Misc
+----
+
+- Windsurf, cursor
+- The composer is an autonomous agent in the codebase. It will execute commands, edit files, whatever. "Vibe coding"
+- Average web dev is completely futile now it seems... 
+
+
+Modalities
+----------
+
+- So far we have been interacting using text only
+- Superwhisper*, WhisperFlow, MacWhisper, AK uses this to transcribe voice to text, basically the same thing you where
+trying to do a couple weeks ago
+
+- Remember that the model still only looks at text tokens. You break down audio into a spectogram to see the different
+frequencies inside. Quantize them into tokens. You train the model with audio chunks so it can understand it!
+The true audio button i.e. the black button on most models nowadays. No text involved here, pretty magical. You
+can change the tonality and speech patterns immediately! It really can do a lot. Possesses a lot of knowledge...
+
+Audio tokens back and forth not the thing from before which is voice->text which the model consumes. The voice one
+refuses a lot, AK has noticed. Then move to text. 
