@@ -132,4 +132,45 @@ The true audio button i.e. the black button on most models nowadays. No text inv
 can change the tonality and speech patterns immediately! It really can do a lot. Possesses a lot of knowledge...
 
 Audio tokens back and forth not the thing from before which is voice->text which the model consumes. The voice one
-refuses a lot, AK has noticed. Then move to text. 
+refuses a lot, AK has noticed. Then move to text
+
+- Grok has lots of modes and very less boundaries and restrictions
+
+- NotebookLM. And also Google AI Studio. Podcast generator! To listen to and also to publish!!
+Useful on walks and drives and other niche cases. Passive interests
+
+- Images can be represented in token streams too. Images converted to rectangular quantized patches 
+
+- The transformer neural network used by LLMs don't even know that some input may be audio, some may be images, or
+what. At the decoding phase, we will get back whatever we asked for essentially
+Upload nutrition labels! Ask questions... First make it transcribe to text, make sure that the model reads the
+values correctly, then ask your questions
+
+- AK also asks questions about his blood tests
+Blood test results are not esoteric. So, once more, we know how to determine if a question is LLM worthy or not,
+especially in the case of high stakes things like our own health. OpenAI DALLE for image output. Not perfect at all,
+but not bad! Thumbnail generation! Ideaogram.ai is a competitor for DALLE. Icons
+
+This isn't done fully in the model. DALLE is a separate model that takes text and creates images
+
+- Video input. Included in advanced voice, as you've seen. You can just open the camera and solve problems
+immediately! 
+AK thinks even in this mode, the model actually takes image chunks and doesn't actually process the video
+
+Video output = Sora + many, many others (Vo2 seems SOTA)
+
+Quality of life features
+------------------------
+
+- ChatGPT memory feature. There is an ability to save information from chat to chat, which is cool because we
+know that a new chat typically means context window is wiped clean. It has to be invoked! Ask it to remember
+stuff, then reference it in another chat -> ChatGPT -> "Memory updated" / Manage memories. This is editable
+
+- Custom instructions. You can modify these LLMs. Present in ChatGPT for sure, but other LLMs are tweakable too
+
+- Custom GPTs, used for language learning! Use LLMs to learn Italian. Extract vocab in dictionary form. Give
+concrete examples and instructions. Few-shot, CoT. If there's a certain prompt you keep reusing, make a custom
+GPT, use it. Like a function you write in code
+
+- AK goes as far as to say, don't use any other translator. Create a custom GPT, it will be more accurate and you
+can ask it clarifying questions. Learn more than just the words, learn sentence structure, slang, nuance, deeply
