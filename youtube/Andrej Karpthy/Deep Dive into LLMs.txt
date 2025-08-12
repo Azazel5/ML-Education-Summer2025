@@ -1,0 +1,88 @@
+Deep Dive into LLMs Like ChatGPT - https://www.youtube.com/watch?v=7xTGNNLPyMI
+------------------------------------------------------------------------------
+
+
+Introduction
+------------
+
+- How can you build something like this? Step 1 = pretraining. Download and process the internet. 
+HuggingFace, https://huggingface.co/spaces/HuggingFaceFW/blogpost-fineweb-v1
+
+- All LLM providers have some version of the FineWeb implemented internally. We filter the data agressively and 
+make it only text so it ends up being about 44TB. CommonCrawl has been scouring the internet since 2007, and this
+forms a core component of this. We eliminate lots of bad and dangerous websites right here, then we get the text
+of the pages themselves. Since the internet is part of a global society of humans, we only keep English content
+because these models have been created in America. Theoretically, one could create a version of this for any other
+non-English speaking country too. What fraction of other languages do we want to see?
+
+- We're trying to model how the text flows, the text of the internet, once processed and the dataset is finally
+curated
+
+- How are we going to represent text for the NNs? "QTFA encode" the text. We're talking about the vocabulary right
+here, we don't want it to be too large. It is a finite, one-dimensional list of 0's and 1's that correspond to
+characters that you and I know
+
+- A naive way is: we take a group of these bits, like 8. Each byte will be a unique identifier, an easy way to
+think about this is: each byte is a unique emoji. This is a precious resource, we want to keep shrinking this in
+return for more symbols in the vocab. "Byte pair encoding" algorithm. GPT-4 uses 100277 symbols, and AK says this
+is relatively a good size for SOTA models. We're converting to tokens and this is exactly what's called tokenization
+
+- For tokenization, case and spacing all matters
+
+Training the NN
+---------------
+
+- While training the NN, we take windows of the tokens we have formed. There are around 15 million tokens
+
+
+Note - The video clarifies the difference between the number of symbols and the number of tokens. The number 100,277 
+refers to the number of unique symbols (or the size of the vocabulary) that a model like GPT-4 uses. These symbols 
+are created through a process called tokenization, using an algorithm like Byte Pair Encoding, which compresses text 
+into a finite set of unique identifiers. The 15 trillion figure, however, refers to the total number of tokens in
+the FineWeb dataset, which is the massive dataset of internet text used to train the language model. This means 
+that while the model has a vocabulary of roughly 100,000 unique symbols to choose from, the total amount of text 
+it was trained on consists of 15 trillion of these symbols in a long sequence. Think of it like this: a book might 
+have 1,000 unique words (vocabulary size), but the book itself could contain 100,000 words in total (the length of 
+the text). The terms "symbols" and "tokens" are used interchangeably in the video to represent these chunks of text
+
+- Our NN takes in sequences of tokens, called the context length, which can be anywhere from 0 to 8000, although the
+example picked in the video is 4. In principle, it can be infinite, but we constraint it because that's computationally
+expensive
+
+[https://excalidraw.com/ for tutorials ;)]
+
+- https://bbycroft.net/llm
+
+- The internal operations of transformers and LLMs are, while they may be important, AK definitely stresses that 
+it is more important to learn the big picture, which is these LLMs are parametrized with, let's say, 85,000 or 
+actually in the case of modern LLMs, probably millions, parameters. They go through some not so complex but many 
+mathematical operations to give you the output
+
+- The process will be, let's say we're doing inference, we feed our trained neural network or LLM one token, 
+and then it is going to continuously, through a biased sampling, assign a higher probability for the more probable 
+token being selected. It does this continuously. One thing to note is that these systems are stochastic in nature, 
+so we are not going to get exact replicas of our training data, which is the entire internet. We get remixes. 
+Sometimes there are randomized outputs that are unexpected from the perspectice of the training data
+
+- GPT-2 published by OpenAI in 2019, https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf
+https://github.com/karpathy/llm.c/discussions/677
+https://github.com/karpathy/llm.c/discussions/481
+
+- Context length is different from context window
+
+- How does AK actually run big LLM training? Like when he trained his own version of GPT-2? Cloud based. 8xH100 node.
+Lambda labs. Kind of like Tufts HPC
+
+- What companies release base models and what is it actually? It's an internet text token simulator. It isn't useful
+yet, since we want an AI assistant! The base model is simple pre-training. 
+
+1. GPT-2
+2. LLaMA 3
+
+https://arxiv.org/pdf/2407.21783
+
+- Interacting with base models -> https://app.hyperbolic.ai/
+The base model is not an assistant yet, it is just an expensive, glorified autocomplete
+For the same prefix of tokens, we'll always get different answer. Stochasticity
+
+
