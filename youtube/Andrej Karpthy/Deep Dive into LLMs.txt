@@ -164,9 +164,9 @@ Knowledge of self
 It has no self awareness. AK is right given my experiences with LLMs not even recognizing their own platforms and =
 basically hallucinating stuff to give me an answer
 
-- OLMO, the paper and everything is fully open source. SFT mixture, the conversations dataset. The knowledge of self
-is usually finetuned, otherwise all models would answer, "I am ChatGPT by OpenAI", given that this is the most
-prominent model on the internet 
+- OLMO, the paper and everything is fully open source. SFT (Supervised Fine Tuning) mixture, the conversations 
+dataset. The knowledge of self is usually finetuned, otherwise all models would answer, "I am ChatGPT by OpenAI", 
+given that this is the most prominent model on the internet 
 
 System messages is sometimes hidden in the platform, reminding the LLM of certain details
 
@@ -184,4 +184,39 @@ the model to guess the answer in one single computation. This is why a CoT style
 
 - ChatGPT can use code. You can simply say, "Use code" in order to be crystal clear sure about math problems
 
-- Models are not good for counting!! But it is good at copy pasting
+- Models are not good for counting!! But it is good at copy pasting. Models aren't so good with spelling either
+
+- The crazy part is that these models are solving such sophisticatedly difficult problems. But sometimes they 
+fall short on simple problems such as which one of these two numbers is bigger 9.11 or 9.22. The fact that 
+these models are trained on the entire internet's data can lead to unpredictable outcomes. 
+One hypothesis is that the model thinks 9.11 or 9.22 that is reminiscent of Bible verses rather than floating point
+numbers. And in such a context, 9.11 is larger than 9.22 I guess. Crazy
+
+
+Reinforcement learning
+----------------------
+
+- Humans and LLMs have very different cognitions. While it is the case that the LLMs have incredibly vast amount of 
+knowledge, first of all that knowledge is superficial. Second, the logical path by which some mathematical solutions
+or spellings, those kind of things, are taken maybe non-obvious to LLMs. This is important to keep in mind
+
+- So the process by which we train LLMS is divided into three categories. First was building the knowledge base, 
+equivalent to reading all textbooks you are required to read when you're in school at once. Second was primed and 
+tuning. This is where the language model becomes an AI assistant. This is where we feed our AI how to answer a 
+question, a bunch of question answer series. So it learns how it's supposed to actually answer kind of like textbook
+examples where the author shows this is how you're supposed to solve a problem and then comes the final stage which 
+is the reinforcement learning stage. Kind of like the exercises at the end of each every chapter in math textbooks 
+where the model tries varieties of situations in a playground setting and tries to get to the correct answer and 
+keeps trying on and on until it does
+
+- One cool thing about reinforcement learning is that the model starts to learn chain of thought reasoning kind of 
+it finds aha moments where it experiments with multiple different ways of attacking a problem and then It 
+backtracks whenever it finds a better way and then it goes back to the original one then backtracks again b
+asically it goes back and forth back and forth kind of like how we Go back and forth whenever we're trying to 
+solve a problem. It mimics our thinking style. This is a reasoning or "thinking" model
+
+- Together.ai hosts DeepSeek R1. There are other SOTA models here too
+
+- https://ics.uci.edu/~dechter/courses/ics-295/winter-2018/papers/nature-go.pdf
+
+- 
