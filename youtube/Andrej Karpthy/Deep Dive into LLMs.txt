@@ -85,4 +85,103 @@ https://arxiv.org/pdf/2407.21783
 The base model is not an assistant yet, it is just an expensive, glorified autocomplete
 For the same prefix of tokens, we'll always get different answer. Stochasticity
 
+The base models are queries in a Q/A way, where we pose the Q. Recall that things that occur frequently on the
+internet can be trusted to a degree as compared to things that are rarer
 
+- When AK did the Wikepedia experiment, the model regurgitates the information exactly... Some chance that there'll
+be some things it will stray away from but sometimes it will give you copy-pasted items word for word
+
+- It is often the case that when you have some documents that are really high quality, we sample from those
+preferentially. Very fascinating experiment on testing models after their knowledge cutoff date. This is where the
+model just hallucinates: takes its best, oftentimes wrong, guess
+Base models can still be used, if you're clever with your prompt design. These models have in-context learning 
+abilities through which we can take these models pretty far with few-shot examples
+
+- Instantiate model assistant through prompting -> use ChatGPT or other LLMs to use prompts
+Give the base models a conversation between an AI assistant and a human. It will go on and on which can be parsed
+through clever structuring of the conversation. We can use the continuation as potential, "Next Questions" or just
+discard them! 
+
+- Post training is usually much less computationally expensive. But this is an important stage where we actually
+turn these into an assistant. We feed the models multiple conversations. An entire large dataset for such 
+conversations. Human labellers will be given some conversational contexts. This dataset is much smaller than the
+pre-training dataset (the entire internet)
+
+- Conversation from conversation to tokens, some sort of tokentization. TCP-IP packets as an analogy. Different
+LLMs have different ways of doing this. GPT-40: im_start, user/assistant??, im_sep (internal monologue), question...
+The model will start learning this encoding too, so it starts separating when the user writes and when it needs to
+respond. So there is no programming here too, it is all MLAI
+
+- During inference, the platform encodes all of this before sending it off to the model because we are only supplying
+the questions. The queries
+
+https://arxiv.org/pdf/2203.02155
+
+- Open Assistant, HuggingFace.  Although OpenAI wrote that paper above, they did not fully explain the rationale and 
+instructions which are according to AK around 300-400 pages long. But we have access to Open Assistant through which
+we can actually see an example of such a dataset
+There are many other examples too
+
+- UltraChat (GitHub). Now we have LLMs which can help us create these datasets and conversations! Atlas Nomic to
+visualize???
+
+- When we talk to ChatGPT, we're talking to something that statistically imitates human labellers guided by the LLM
+organization. These organizations hire experts; we're talking to average labeller simulations
+
+
+Hallucinations
+--------------
+
+- Since the model statistically imitates the training set, even if deep inside its neurons or features it knows that
+it doesn't know the answer to something, it will not say that. It is trained on answers not doubt. It will give a
+confident answer because it has been trained on confident answers! 
+
+- HuggingFace Inference Playground
+If you ask the model to use tools or to not, they seem to follow instructions well
+
+- So perhaps there are some examples we need to keep in our dataset where the model doesn't know the answer
+How can we know when the model knows or doesn't? Empiracal probe. The Meta LLaMA way was to interrogate the model
+and find its limits then work around there. Other LLMs can be used adversarially as judges to see how right the
+answers are. We compare true answers to the generated answers. If in the case the model fails, we're going to add 
+this question to the training set. And we'll make the answer, "I'm sorry, I don't know" or something like that.
+Pretty smart
+
+- Mitigation #2! Google search tool. Special tokens for the introduction of tools. The search text enters the
+context window as a way to "freshen up" the model's memory about the topic and even serve as direct factual answers!
+Once again, every new tool you introduce, you'll need to teach your model how to use it. Through few shot examples.
+A few thousand examples, says the man. Funny discovery: due to the fact That these models have been trained on the 
+entire internet, it actually has a good idea of what an internet search is. So it's able to pick it up pretty decently
+
+- Vague recollection versus working memory. Knowledge in the parameters, "the neurons", is vague. Knowledge in the
+context window is direct, manipulatable. Working memory. 
+When possible, refresh the LLMs' memory! 
+
+
+Knowledge of self 
+-----------------
+
+- It's a "token tumbler"
+It has no self awareness. AK is right given my experiences with LLMs not even recognizing their own platforms and =
+basically hallucinating stuff to give me an answer
+
+- OLMO, the paper and everything is fully open source. SFT mixture, the conversations dataset. The knowledge of self
+is usually finetuned, otherwise all models would answer, "I am ChatGPT by OpenAI", given that this is the most
+prominent model on the internet 
+
+System messages is sometimes hidden in the platform, reminding the LLM of certain details
+
+
+Models need tokens to think
+---------------------------
+
+- There's a finite amount of computation that happens for every token sequence input to the point where we can go
+to output token probabilities. The more tokens we feed in, the more expensive the forward pass is. Not by much though.
+Fixed amount of compute. We cannot expect any high level of computation out of any one token, so it is better to
+distribute computations across many tokens. If you create prompts that answer the question immediately, you're training
+the model to guess the answer in one single computation. This is why a CoT style answer is better
+
+- We can also force the models to answer the question "in a single token" or something
+
+- ChatGPT can use code. You can simply say, "Use code" in order to be crystal clear sure about math problems
+
+- Models are not good for counting!! But it is good at copy pasting
